@@ -15,13 +15,13 @@ const audioPlay = new Audio('./sons/play.wav');
 const audioPausa = new Audio('./sons/pause.mp3');
 const audioTempoFinalizado = new Audio('./sons/beep.mp3')
 
-let tempoDecorridoEmSegundos = 1500 
+let tempoDecorridoEmSegundos = 1500
 let intervaloId = null
 
 musica.loop = true
 
 musicaFocoInput.addEventListener('change', () => {
-    if(musica.paused) {
+    if (musica.paused) {
         musica.play()
     } else {
         musica.pause()
@@ -32,23 +32,26 @@ focoBt.addEventListener('click', () => {
     tempoDecorridoEmSegundos = 1500
     alterarContexto('foco')
     focoBt.classList.add('active')
+    
 })
 
 curtoBt.addEventListener('click', () => {
     tempoDecorridoEmSegundos = 300
     alterarContexto('descanso-curto')
     curtoBt.classList.add('active')
+    
 })
 
 longoBt.addEventListener('click', () => {
     tempoDecorridoEmSegundos = 900
     alterarContexto('descanso-longo')
     longoBt.classList.add('active')
+    
 })
 
 function alterarContexto(contexto) {
     mostrarTempo()
-    botoes.forEach(function (contexto){
+    botoes.forEach(function (contexto) {
         contexto.classList.remove('active')
     })
     html.setAttribute('data-contexto', contexto)
@@ -63,7 +66,7 @@ function alterarContexto(contexto) {
         case "descanso-curto":
             titulo.innerHTML = `
             Que tal dar uma respirada? <strong class="app__title-strong">Faça uma pausa curta!</strong>
-            ` 
+            `
             break;
         case "descanso-longo":
             titulo.innerHTML = `
@@ -75,10 +78,10 @@ function alterarContexto(contexto) {
 }
 
 const contagemRegressiva = () => {
-    if(tempoDecorridoEmSegundos <= 0){
+    if (tempoDecorridoEmSegundos <= 0) {
         audioTempoFinalizado.play()
         zerar()
-        alert('Tempo finalizado!')
+        
         return
     }
     tempoDecorridoEmSegundos -= 1
@@ -88,29 +91,80 @@ const contagemRegressiva = () => {
 startPauseBt.addEventListener('click', iniciarOuPausar)
 
 function iniciarOuPausar() {
-    if(intervaloId){
+    if (intervaloId) {
         audioPausa.play()
         zerar()
         return
     }
     audioPlay.play()
     intervaloId = setInterval(contagemRegressiva, 1000)
-    iniciarOuPausarBtn.textContent="Pausar"
+    iniciarOuPausarBtn.textContent = "Pausar"
     iniciarOuPausarBtnIcone.setAttribute('src', './imagens/pause.png')
 
 }
 
 function zerar() {
-    clearInterval(intervaloId) 
-    iniciarOuPausarBtn.textContent="Começar"
+    clearInterval(intervaloId)
+    iniciarOuPausarBtn.textContent = "Começar"
     intervaloId = null
     iniciarOuPausarBtnIcone.setAttribute('src', './imagens/play_arrow.png')
 }
 
-function mostrarTempo(){
+function mostrarTempo() {
     const tempo = new Date(tempoDecorridoEmSegundos * 1000)
-    const tempoFormatado = tempo.toLocaleTimeString('pt-br', {minute: '2-digit', second:'2-digit'})
+    const tempoFormatado = tempo.toLocaleTimeString('pt-br', { minute: '2-digit', second: '2-digit' })
     tempoNaTela.innerHTML = ` ${tempoFormatado}`
+     if (tempoDecorridoEmSegundos <= 60) {
+        tempoNaTela.style.color = "red";
+
+        if (tempoDecorridoEmSegundos <= 10) {
+            if (tempoDecorridoEmSegundos % 2 === 0) {
+                tempoNaTela.style.visibility = "hidden"; 
+            } else {
+                tempoNaTela.style.visibility = "visible"; 
+            }
+        } else {
+            tempoNaTela.style.visibility = "visible"; 
+        }
+    } else {
+        tempoNaTela.style.visibility = "visible"; 
+    }
+}
+
+
+
+function alterarContexto(contexto) {
+    mostrarTempo()
+    botoes.forEach(function (contexto) {
+        contexto.classList.remove('active')
+    })
+    html.setAttribute('data-contexto', contexto)
+    banner.setAttribute('src', `./imagens/${contexto}.png`)
+
+    switch (contexto) {
+        case "foco":
+            tempoNaTela.style.color = "#7713dbff";
+            titulo.innerHTML = `
+            Otimize sua produtividade,<br>
+                <strong class="app__title-strong">mergulhe no que importa.</strong>
+            `
+            break;
+        case "descanso-curto":
+            tempoNaTela.style.color = "green";
+            titulo.innerHTML = `
+            Que tal dar uma respirada? <strong class="app__title-strong">Faça uma pausa curta!</strong>
+            ` 
+            break;
+        case "descanso-longo":
+            tempoNaTela.style.color = "blue";
+            titulo.innerHTML = `
+            Hora de voltar à superfície.<strong class="app__title-strong"> Faça uma pausa longa.</strong>
+            `
+            break;
+        default:
+            tempoNaTela.style.color = "white"; 
+            break;
+    }
 }
 
 mostrarTempo()
